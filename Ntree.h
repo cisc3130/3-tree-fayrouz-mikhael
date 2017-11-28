@@ -8,8 +8,15 @@
 #include <map>
 #include <numeric>
 #include <queue>
-#include <string>
+#include <string.h>
 #include <vector>
+#include<fstream>
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+
+
 
 namespace std {
 	std::string to_string(const std::string& str) { return str; }
@@ -140,20 +147,116 @@ class NTree {
 	}
 
 	// TODO: replace dummy return value with test for equality
-	bool operator==(const NTree<T>& rhs) {
-		return true;			
+	bool operator==(const NTree<T>& rhs) {	
+		return (help(root, rhs)); // call help function
+					
 	}
+	
+	bool help(NTree::tnode*root , const NTree<T>&rhs){ // operator helper
+		if((!root)||(!rhs.root))  // chack if there is no root or no rhs.root it returns false
+		return false;
+			
+		if(root->data == rhs.root->data)  // if the both roots have the same data , return true
+		return true;
+				
+		if(root->children.empty()&& rhs.root->children.empty()){ // if the tree have only root with no children 
+		if (root->data == rhs.root->data) // if their data are the same return true.
+		return true;
+	}
+		for(int i =0 ; i< (root->children[i] && root->children.size()); i++){ // loop to go over the all of children 
+	    if (help((rhs.root->children[i]) , rhs))                               // and do recurion on them
+		return true;
+	   }
+	return false;	
+	
+}
+		
+	
 
 	// TODO: implement method to write tree in recoverable format to file
-	void serialize(const std::string& filename) {
-		
-	}
+      void serialize(const std::string& filename) {
+     	std ::ofstream file;
+     	file.open(filename); // opens the file
+	
+        if (!root)	return; 
+
+        std::queue<tnode*> qu; // create a queue to push the root in it and to store all the children
+        qu.push(root); // push the root
+  
+    
+        while(!qu.empty()){
+        	
+        tnode* rnd = qu.front(); //  rnd is a node which stores the front of the queue  
+        qu.pop();
+        tnode* pnd = rnd;
+        std::stack<tnode*> sta; //  create a stack which holds the parents of the children
+
+        while (pnd !=root){
+        sta.push(pnd->parent); // push the parent of the node while it is not equal to the root of the tree
+        nd = pnd -> parent;
+        }     
+        
+        while(!sta.empty()){ // while the stack is not empty
+ 	    file << pnd-> parent ;       	// print the parent to the the file 
+ 	    std:: cout  << sta.top()->data<< " " ; // gets the top of the stack which will be each parent
+ 	    sta.pop();
+ 	    }
+	             	 
+		std:: cout<< rnd->data << " " <<std::endl; // prints the tree into the file
+             
+	     for(int i=0 ; i<rnd->children.size() ; i++ ){
+                    qu.push(rnd->children[i]); // for loop to push each childern in the queue
+            }	 	 
+
+       }
+           
+		   file.close(); // close the file
+		   
+        }
+         };
 
 	// TODO: implement method to read tree in from file
-	void deserialize(const std::string& filename) {
+      void deserialize(const std::string& filename) {
+	       	std::string line;
+	     	std::ifstream file;
+		    file.open(filename);
+		
+	    	while(file){
+	     	std::getline(file,line);
+	    	std::string word;
+		 
+		   std::istringstream ww(word);
+		   std::vector<T>vec{std::istream_iterator<std::string>{ww},
+		   std::istream_iterator<std::string>{}};
+		
+	    	tnode* nnd = new tnode(vec.back());// nnd which is the new node that the vector's back
+	    	tnode* nd = root;
+	    	if(vec.size()==1)
+	    	root= nnd; // if the vector is size one this means that it has only one node which is the root
+	    	
+	    	int i =0;
+	    	
+	    while(i<vec.size()-1){ // loop over the whole vector to size -1
+		int j=0;
+	    	while(j < nd->children.size()-1){ // loop over the children size
+			if (nd->children[i]->data ==vec[i]){ // find the children that has the value in vector
+	    	nd= nd->children[j]; // set nd to that child;
+	    	break;	
+			}
+		   else
+			std::cout<<"no tree" << " " <<std::endl; // otherwise prints no tree
+			j++;
+		  }
+		  i++;
+	}	  
+		nd->addChild(nnd); // nd points to the parent of nnd , so add the child
+		nnd -> parent = nd; // then make parent equal to the nd
+			}
 
-	}
-
+		file.close();
+		
+}	
+	
 };
 
 #endif
